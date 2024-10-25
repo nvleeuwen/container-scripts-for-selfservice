@@ -172,6 +172,29 @@ function Import-AppArtifact {
                     # Check, if the new App is correct installed
                     $result = (Get-NAVAppInfo -ServerInstance $ServerInstance -Name $app.Name -Publisher $app.Publisher -Version $app.Version -TenantSpecificProperties -Tenant $Tenant -ErrorAction SilentlyContinue) | Select-Object -First 1
                     $skipInstall = $result -and $result.IsInstalled  
+
+                    if ($oldApp.IsPublished) {
+                        try {
+                            $started3 = Get-Date -Format "o"
+                            Add-ArtifactsLog -kind App -message "Unpublish old App $($oldApp.Name) $($oldApp.Publisher) $($oldApp.Version) ..." -data $app
+                            Unpublish-NAVApp -ServerInstance $ServerInstance -Tenant $Tenant -Name $oldApp.Name -Publisher $oldApp.Publisher -Version $oldApp.Version -ErrorAction SilentlyContinue -ErrorVariable err -WarningVariable warn -InformationVariable info
+                            $info | foreach { Add-ArtifactsLog -kind App -message "$_" -severity Info  -data $app }
+                            $warn | foreach { Add-ArtifactsLog -kind App -message "$_" -severity Warn  -data $app }
+                            $err  | foreach { Add-ArtifactsLog -kind App -message "$_" -severity Error -data $app }
+                            $success = ! $err
+                            if ($success) { Add-ArtifactsLog -kind App -message "Unpublish old App successful" -data $app -success success }
+                        }
+                        catch {
+                            Add-ArtifactsLog -kind App -message "Unpublish old App $($oldApp.Name) $($oldApp.Publisher) $($oldApp.Version) FAILED:$([System.Environment]::NewLine)  $($_.Exception.Message)" -data $app -success fail -severity Error
+                            $success = $false
+                        }
+                        finally {
+                            Invoke-LogOperation -name "Unpublish old App" -started $started3 -properties $properties -success $success -telemetryClient $telemetryClient
+                        } 
+                    }
+                    else {
+                        Write-Host "Old App $($oldApp.Name) $($oldApp.Publisher) $($oldApp.Version) is already unpublished. Skip unpublishing."
+                    }
                 }
                 catch {
                     Add-ArtifactsLog -kind App -message "Start App Data Upgrade $($app.Name) $($app.Publisher) $($app.Version) FAILED:$([System.Environment]::NewLine)  $($_.Exception.Message)" -data $app -success fail -severity Error
