@@ -132,11 +132,11 @@ function Import-AppArtifact {
                 finally {
                     Invoke-LogOperation -name "Publish App" -started $started2 -properties $properties -success $success -telemetryClient $telemetryClient
                 }
+                $skipInstall = ! $success
             }
 
             # Sync NAVApp
             if ($success) {
-                $skipInstall = ! $success
                 try {
                     $started2 = Get-Date -Format "o"
                     Add-ArtifactsLog -kind App -message "Sync App $($app.Name) $($app.Publisher) $($app.Version)..." -data $app
@@ -152,7 +152,7 @@ function Import-AppArtifact {
                     $success = $false
                 }
                 finally {
-                    Invoke-LogOperation -name "Publish App" -started $started2 -properties $properties -success $success -telemetryClient $telemetryClient
+                    Invoke-LogOperation -name "Sync App" -started $started2 -properties $properties -success $success -telemetryClient $telemetryClient
                 }
                 $skipInstall = ! $success
             }
