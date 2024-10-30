@@ -1,8 +1,10 @@
 $scripts = @(
-                        (Join-Path $PSScriptRoot "ExtendedEnvironment.ps1"),
-                        (Join-Path $PSScriptRoot "navstartCustomScripts.ps1"),
-                        (Join-Path $PSScriptRoot "winrm.ps1")
-                        (Join-Path $PSScriptRoot "timezone.ps1")
+    (Join-Path $PSScriptRoot "PPIOverrides.ps1"),
+    (Join-Path $PSScriptRoot "ExtendedEnvironment.ps1"),
+    (Join-Path $PSScriptRoot "navstartCustomScripts.ps1"),
+    (Join-Path $PSScriptRoot "winrm.ps1"),
+    (Join-Path $PSScriptRoot "timezone.ps1"),
+    (Join-Path $runPath $MyInvocation.MyCommand.Name) # default
 )
 
 Write-Host "Start"
@@ -14,6 +16,3 @@ foreach ($script in $scripts) {
         . ($script)
     }
 }
-
-# invoke default
-. (Join-Path $runPath $MyInvocation.MyCommand.Name)
