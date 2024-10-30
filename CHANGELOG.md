@@ -25,3 +25,4 @@
 - Allow to work with BC Online backups from modified base app clusters
 - Fix potential problem with NavUserPassword auth (see [#3047](https://dev.azure.com/cc-ppi/Self-Service/_workitems/edit/3047))
 - Fix hangup of Publish-NAVApp on BC25 containers
+- Check if app is already installed when installing apps

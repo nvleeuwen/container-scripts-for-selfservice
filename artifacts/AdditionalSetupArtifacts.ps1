@@ -166,6 +166,10 @@ $properties = @{}
 
 Invoke-LogEvent -name "AdditionalSetup - Started" -telemetryClient $telemetryClient
 
+# Show installed apps
+Write-Host "##[group]Initially installed apps"
+Get-NAVAppInfo -Tenant $tenantId -TenantSpecificProperties -ServerInstance $ServerInstance
+Write-Host "##[endgroup]"
 
 # Download Artifacts
 try {
